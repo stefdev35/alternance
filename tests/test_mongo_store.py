@@ -54,5 +54,40 @@ class TestMongoStore:
         assert rows
         assert all("Python" in r["title"] for r in rows)
 
+    def test_list_offers_city_filter(self, mongo_store, sample_offers):
+        mongo_store.upsert_many(sample_offers)
+        rows = mongo_store.list_offers(city="lyon")
+        assert rows
+        assert all("lyon" in (r["workplace"]["location"].get("address") or "").lower()
+                   for r in rows)
+
+    def test_list_offers_skill_filter(self, mongo_store, sample_offers):
+        mongo_store.upsert_many(sample_offers)
+        rows = mongo_store.list_offers(skill="autonomie")
+        assert rows
+        assert len(rows) <= len(sample_offers)
+        assert len(rows) >= 1
+
+    def test_list_offers_diploma_filter(self, mongo_store, sample_offers):
+        mongo_store.upsert_many(sample_offers)
+        rows = mongo_store.list_offers(diploma_level="6")
+        assert rows
+        assert all(r["target_diploma_european"] == "6" for r in rows)
+
+    def test_count_with_filters(self, mongo_store, sample_offers):
+        mongo_store.upsert_many(sample_offers)
+        total = mongo_store.count_offers()
+        filtered = mongo_store.count_offers(city="paris")
+        assert filtered <= total
+        assert filtered == len(mongo_store.list_offers(city="paris"))
+
+    def test_distinct_facets(self, mongo_store, sample_offers):
+        mongo_store.upsert_many(sample_offers)
+        assert mongo_store.distinct_cities()
+        assert mongo_store.distinct_skills()
+        levels = mongo_store.distinct_diploma_levels()
+        assert levels
+        assert all("level" in d and "label" in d for d in levels)
+
     def test_get_offer_unknown_returns_none(self, mongo_store):
         assert mongo_store.get_offer("inexistant") is None

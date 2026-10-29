@@ -58,10 +58,11 @@ Routes utiles :
 
 | Route | Description |
 |---|---|
-| `/` | Liste des offres (`?backend=duckdb\|mongo`, `?title=…`) |
+| `/` | Liste des offres (`?backend=duckdb\|mongo`, `?title=…`, `?city=…`, `?skill=…`, `?diploma_level=…`) |
 | `/offers/{id}` | Page de détail d'une offre |
-| `/offers` | Liste en JSON |
+| `/offers` | Liste en JSON (mêmes filtres que `/`) |
 | `/offers/{id}/json` | Détail d'une offre en JSON brut |
+| `/filters` | Valeurs disponibles pour les filtres (villes, compétences, diplômes) |
 | `/health` | État des connexions DuckDB / MongoDB |
 
 ## Tests
@@ -70,7 +71,7 @@ Routes utiles :
 uv run pytest
 ```
 
-56 tests : modèles, client API, scraper Indeed, normalisation, stockages
+71 tests : modèles, client API, scraper Indeed, normalisation, filtres, stockages
 DuckDB/MongoDB, ingestion, application web.
 Détails : [`docs/tests.md`](docs/tests.md).
 
