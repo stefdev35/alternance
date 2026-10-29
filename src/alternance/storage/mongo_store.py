@@ -6,6 +6,7 @@ complet) dans une collection, avec _id = identifiant de l'offre.
 
 from __future__ import annotations
 
+import re
 from typing import Optional
 
 from pymongo import MongoClient
@@ -152,6 +153,32 @@ class MongoStore:
                 if len(skills) >= limit:
                     break
         return skills
+
+    def search_skills(self, prefix: str, limit: int = 10) -> list[str]:
+        """Compétences commençant par `prefix` (insensible à la casse).
+
+        Agrégation : concaténation des tableaux de compétences, dépliage
+        ($unwind) puis correspondance sur le préfixe.
+        """
+        pipeline = [
+            {
+                "$project": {
+                    "skills": {
+                        "$concatArrays": [
+                            {"$ifNull": ["$offer.desired_skills", []]},
+                            {"$ifNull": ["$offer.to_be_acquired_skills", []]},
+                            {"$ifNull": ["$offer.access_conditions", []]},
+                        ]
+                    }
+                }
+            },
+            {"$unwind": "$skills"},
+            {"$match": {"skills": {"$regex": f"^{re.escape(prefix)}", "$options": "i"}}},
+            {"$group": {"_id": "$skills"}},
+            {"$sort": {"_id": 1}},
+            {"$limit": limit},
+        ]
+        return [doc["_id"] for doc in self.collection.aggregate(pipeline)]
 
     def distinct_diploma_levels(self) -> list[dict]:
         levels: dict[str, str] = {}

@@ -87,6 +87,30 @@ class TestWebApp:
         data = resp.json()
         assert "cities" in data and "skills" in data and "diploma_levels" in data
 
+    def test_skills_autocomplete_endpoint(self, client):
+        resp = client.get("/skills?q=faire")
+        assert resp.status_code == 200
+        skills = resp.json()
+        assert skills
+        assert all(s.lower().startswith("faire") for s in skills)
+
+    def test_skills_autocomplete_requires_q(self, client):
+        assert client.get("/skills").status_code == 422
+
+    def test_skills_autocomplete_prefix_dynamic(self, client):
+        """Chaque préfixe renvoie un sous-ensemble adapté (progression)."""
+        broad = client.get("/skills?q=faire").json()
+        narrow = client.get("/skills?q=faire preuve d'auto").json()
+        assert narrow
+        assert set(narrow) <= set(broad)
+
+    def test_index_has_autocomplete_script(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "skill-input" in resp.text
+        assert "autocomplete-list" in resp.text
+        assert "/skills?q=" in resp.text
+
     def test_offer_detail_html(self, client, sample_offers):
         offer = sample_offers[0]
         resp = client.get(f"/offers/{offer.id}")

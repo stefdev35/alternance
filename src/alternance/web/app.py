@@ -95,6 +95,17 @@ def list_filters(backend: str = Query("duckdb")):
     return data
 
 
+@app.get("/skills")
+def skills_autocomplete(q: str = Query(..., min_length=1, max_length=100),
+                        backend: str = Query("duckdb"),
+                        limit: int = Query(10, ge=1, le=50)):
+    """Auto-complétion des compétences : préfixe `q`, insensible à la casse."""
+    store = _get_store(backend)
+    skills = store.search_skills(q, limit=limit)
+    store.close()
+    return skills
+
+
 @app.get("/offers/{offer_id}", response_class=HTMLResponse)
 def offer_detail(request: Request, offer_id: str, backend: str = Query("duckdb")):
     store = _get_store(backend)

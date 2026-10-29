@@ -1,6 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Offres — Alternance{% endblock %}
 {% block content %}
+  <style>
+    .autocomplete { position: relative; display: inline-block; }
+    .autocomplete-list {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      margin: 0; padding: 0;
+      list-style: none;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .autocomplete-list li {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .autocomplete-list li:hover,
+    .autocomplete-list li.active { background: #eef4fb; color: var(--primary); }
+  </style>
   <form class="toolbar" method="get" action="/">
     <select name="backend" onchange="this.form.submit()">
       <option value="duckdb" {% if backend == "duckdb" %}selected{% endif %}>DuckDB (relationnel)</option>
@@ -11,10 +34,10 @@
     <datalist id="city-list">
       {% for c in cities %}<option value="{{ c }}">{% endfor %}
     </datalist>
-    <input type="text" name="skill" value="{{ skill or '' }}" placeholder="Compétence…" list="skill-list">
-    <datalist id="skill-list">
-      {% for s in skills %}<option value="{{ s }}">{% endfor %}
-    </datalist>
+    <div class="autocomplete">
+      <input type="text" name="skill" id="skill-input" value="{{ skill or '' }}" placeholder="Compétence…" autocomplete="off">
+      <ul class="autocomplete-list" id="skill-list" hidden></ul>
+    </div>
     <select name="diploma_level">
       <option value="">Diplôme (tous)</option>
       {% for d in diploma_levels %}
@@ -63,4 +86,76 @@
   {% else %}
     <p class="muted">Aucune offre trouvée.</p>
   {% endfor %}
+
+  <script>
+    (function () {
+      const input = document.getElementById('skill-input');
+      const list = document.getElementById('skill-list');
+      const backend = {{ backend | tojson }};
+      let items = [];
+      let active = -1;
+      let timer = null;
+
+      function fetchSuggestions(q) {
+        fetch('/skills?q=' + encodeURIComponent(q) + '&backend=' + encodeURIComponent(backend))
+          .then(function (r) { return r.json(); })
+          .then(function (data) { items = data; render(); })
+          .catch(function () { list.hidden = true; });
+      }
+
+      function render() {
+        list.innerHTML = '';
+        if (!items.length) { list.hidden = true; return; }
+        items.forEach(function (skill, i) {
+          const li = document.createElement('li');
+          li.textContent = skill;
+          if (i === active) li.className = 'active';
+          li.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            selectSkill(skill);
+          });
+          list.appendChild(li);
+        });
+        list.hidden = false;
+      }
+
+      function selectSkill(value) {
+        input.value = value;
+        list.hidden = true;
+        items = [];
+        active = -1;
+      }
+
+      input.addEventListener('input', function () {
+        clearTimeout(timer);
+        active = -1;
+        const q = input.value.trim();
+        if (q.length < 2) {
+          list.hidden = true;
+          items = [];
+          return;
+        }
+        timer = setTimeout(function () { fetchSuggestions(q); }, 150);
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          active = Math.min(active + 1, items.length - 1);
+          render();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          active = Math.max(active - 1, 0);
+          render();
+        } else if (e.key === 'Enter' && active >= 0) {
+          e.preventDefault();
+          selectSkill(items[active]);
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest('.autocomplete')) { list.hidden = true; }
+      });
+    })();
+  </script>
 {% endblock %}

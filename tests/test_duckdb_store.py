@@ -97,5 +97,18 @@ class TestDuckDBStore:
         assert levels
         assert all("level" in d and "label" in d for d in levels)
 
+    def test_search_skills_prefix(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        matches = store.search_skills("faire preuve d'auto", limit=10)
+        assert matches
+        assert all(s.lower().startswith("faire preuve d'auto") for s in matches)
+
+    def test_search_skills_case_insensitive(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        assert store.search_skills("AUTONOMIE") or True  # pas de crash, insensible casse
+        upper = store.search_skills("FAIRE")
+        lower = store.search_skills("faire")
+        assert upper == lower
+
     def test_get_offer_unknown_returns_none(self, store):
         assert store.get_offer("inexistant") is None

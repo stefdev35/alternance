@@ -124,8 +124,17 @@ La documentation interactive OpenAPI est disponible sur `/docs` (générée par 
 | `skill` | Correspondance sur les compétences (attendues, à acquérir, accès) | `?skill=autonomie` |
 | `diploma_level` | Niveau européen du diplôme visé (`3` à `7`) | `?diploma_level=6` |
 
-Les filtres sont **cumulables** (AND). Dans l'interface web, la ville et la compétence
-bénéficient d'auto-complétion (datalists) ; le niveau de diplôme est un menu déroulant.
+Les filtres sont **cumulables** (AND). Dans l'interface web :
+- la **compétence** dispose d'une **auto-complétion dynamique** (l'endpoint `/skills`
+  renvoie les compétences commençant par le texte tapé, dès 2 caractères) ;
+- la **ville** bénéficie d'une auto-complétion native (datalist) ;
+- le **niveau de diplôme** est un menu déroulant.
+
+### Auto-complétion des compétences
+
+| Route | Description |
+|---|---|
+| `GET /skills?q=…&backend=…` | Compétences commençant par `q` (insensible à la casse), jusqu'à `limit` (défaut 10) |
 
 ### Exemples curl
 

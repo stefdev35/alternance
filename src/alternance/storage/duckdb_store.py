@@ -454,6 +454,19 @@ class DuckDBStore:
         )
         return [r["skill"] for r in rows]
 
+    def search_skills(self, prefix: str, limit: int = 10) -> list[str]:
+        """Compétences commençant par `prefix` (insensible à la casse).
+
+        Utilisé par l'auto-complétion de l'interface.
+        """
+        rows = self._rows(
+            "SELECT DISTINCT skill FROM skills "
+            "WHERE lower(skill) LIKE lower(?) "
+            "ORDER BY skill LIMIT ?",
+            [f"{prefix}%", limit],
+        )
+        return [r["skill"] for r in rows]
+
     def distinct_diploma_levels(self) -> list[dict]:
         rows = self._rows(
             "SELECT DISTINCT target_diploma_european, target_diploma_label "

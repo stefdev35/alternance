@@ -63,6 +63,7 @@ Routes utiles :
 | `/offers` | Liste en JSON (mêmes filtres que `/`) |
 | `/offers/{id}/json` | Détail d'une offre en JSON brut |
 | `/filters` | Valeurs disponibles pour les filtres (villes, compétences, diplômes) |
+| `/skills?q=…` | Auto-complétion des compétences (préfixe, insensible à la casse) |
 | `/health` | État des connexions DuckDB / MongoDB |
 
 ## Tests
@@ -71,7 +72,7 @@ Routes utiles :
 uv run pytest
 ```
 
-71 tests : modèles, client API, scraper Indeed, normalisation, filtres, stockages
+79 tests : modèles, client API, scraper Indeed, normalisation, filtres, stockages
 DuckDB/MongoDB, ingestion, application web.
 Détails : [`docs/tests.md`](docs/tests.md).
 
