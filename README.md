@@ -16,8 +16,8 @@ d'un backend à l'autre et d'afficher le détail de chaque annonce.
 - Détail d'une offre : `GET /job/v1/offer/{id}`
 - Auth : header `Authorization: Bearer <API_KEY>`
 
-> Sans clé API, le projet utilise un **mode mock** (`data/sample_offers.json`) pour tester
-> toute la chaîne (ingestion + consultation) sans réseau.
+> Sans clé API, le projet utilise un **mode mock** (`src/alternance/samples/sample_offers.json`)
+> pour tester toute la chaîne (ingestion + consultation) sans réseau.
 
 ## Prérequis
 
@@ -58,6 +58,21 @@ Routes utiles :
 | `/offers` | Liste en JSON |
 | `/offers/{id}/json` | Détail d'une offre en JSON brut |
 | `/health` | État des connexions DuckDB / MongoDB |
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+35 tests : modèles, client API, stockages DuckDB/MongoDB, ingestion, application web.
+Détails : [`docs/tests.md`](docs/tests.md).
+
+## Documentation
+
+- [Guide d'utilisation](docs/usage.md) — installation, ingestion, routes web, API LBA
+- [Déploiement](docs/deploy.md) — configuration, services, bonnes pratiques
+- [Architecture](docs/architecture/architecture.md) — schémas, modèle de données, ADR
 
 ## Structure
 

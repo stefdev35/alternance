@@ -1,0 +1,400 @@
+{
+  "jobs": [
+    {
+      "identifier": {
+        "partner_job_id": "mock-dev-python-001",
+        "id": "60d2f5a0e8c1a20001a1b2c3",
+        "partner_label": "LBA"
+      },
+      "workplace": {
+        "name": "TechCorp Solutions",
+        "description": "ESN spécialisée dans le développement web et les données.",
+        "website": "https://techcorp.example.com",
+        "siret": "12345678901234",
+        "location": {
+          "address": "12 rue de la République 69002 Lyon",
+          "geopoint": { "type": "Point", "coordinates": [4.8357, 45.7640] }
+        },
+        "brand": "TechCorp",
+        "legal_name": "TechCorp Solutions SAS",
+        "size": "50 à 99 salariés",
+        "domain": {
+          "idcc": 1486,
+          "opco": "OPCO 2i",
+          "naf": { "code": "62.01Z", "label": "Programmation informatique" }
+        }
+      },
+      "apply": {
+        "phone": "04 72 00 00 00",
+        "url": "https://techcorp.example.com/postuler/dev-python",
+        "recipient_id": "12345678901234"
+      },
+      "contract": {
+        "start": "2026-09-01T00:00:00.000Z",
+        "start_type": "precise_date",
+        "start_is_flexible": true,
+        "duration": 12,
+        "type": ["Apprentissage"],
+        "remote": "hybrid"
+      },
+      "offer": {
+        "title": "Développeur / Développeuse Python en alternance",
+        "description": "Au sein de notre pôle data, vous participez au développement d'applications web Python (FastAPI, PostgreSQL) et à l'automatisation de pipelines de données.",
+        "desired_skills": [
+          "Faire preuve d'autonomie",
+          "Travailler en équipe",
+          "Faire preuve de rigueur et de précision"
+        ],
+        "to_be_acquired_skills": [
+          "Concevoir une application web",
+          "Développer des API REST",
+          "Mettre en place des pipelines de données"
+        ],
+        "access_conditions": [
+          "Formation de niveau Bac+2 à Bac+5 en informatique",
+          "Connaissances de base en Python appréciées"
+        ],
+        "opening_count": 1,
+        "publication": {
+          "creation": "2026-10-15T08:00:00.000Z",
+          "expiration": "2027-03-15T23:59:59.000Z"
+        },
+        "rome_codes": ["M1805", "M1806"],
+        "target_diploma": { "european": "6", "label": "Licence / BUT" },
+        "status": "Active",
+        "to_applicant_questions": [
+          "Quelle est votre disponibilité pour démarrer ?",
+          "Quels projets Python avez-vous réalisés ?"
+        ]
+      },
+      "is_delegated": false
+    },
+    {
+      "identifier": {
+        "partner_job_id": "mock-data-analyst-002",
+        "id": "60d2f5a0e8c1a20001a1b2c4",
+        "partner_label": "France Travail"
+      },
+      "workplace": {
+        "name": "DataSquad",
+        "description": "Cabinet de conseil en data et BI.",
+        "website": "https://datasquad.example.com",
+        "siret": "98765432109876",
+        "location": {
+          "address": "5 avenue des Champs-Élysées 75008 Paris",
+          "geopoint": { "type": "Point", "coordinates": [2.2945, 48.8698] }
+        },
+        "brand": "DataSquad",
+        "legal_name": "DataSquad Conseil",
+        "size": "20 à 49 salariés",
+        "domain": {
+          "idcc": 2120,
+          "opco": "Atlas",
+          "naf": { "code": "62.02A", "label": "Conseil en systèmes et logiciels informatiques" }
+        }
+      },
+      "apply": {
+        "phone": "01 44 00 00 00",
+        "url": "https://datasquad.example.com/candidatures/data-analyst",
+        "recipient_id": "98765432109876"
+      },
+      "contract": {
+        "start": "2026-09-01T00:00:00.000Z",
+        "start_type": "precise_date",
+        "start_is_flexible": false,
+        "duration": 24,
+        "type": ["Apprentissage", "Professionnalisation"],
+        "remote": "onsite"
+      },
+      "offer": {
+        "title": "Data Analyst en alternance (H/F)",
+        "description": "Vous accompagnez les consultants dans l'analyse des données clients : requêtage SQL, dataviz (Power BI), aide à la décision.",
+        "desired_skills": [
+          "Faire preuve d'autonomie",
+          "Faire preuve d'analyse et de synthèse",
+          "Travailler en équipe"
+        ],
+        "to_be_acquired_skills": [
+          "Analyser des données",
+          "Créer des tableaux de bord",
+          "Utiliser des outils de dataviz"
+        ],
+        "access_conditions": [
+          "Formation de niveau Bac+2 (BTS, DUT) à Bac+5 en statistiques ou informatique"
+        ],
+        "opening_count": 2,
+        "publication": {
+          "creation": "2026-10-20T09:30:00.000Z",
+          "expiration": "2027-04-20T23:59:59.000Z"
+        },
+        "rome_codes": ["M1403"],
+        "target_diploma": { "european": "6", "label": "Licence / BUT" },
+        "status": "Active",
+        "to_applicant_questions": null
+      },
+      "is_delegated": false
+    },
+    {
+      "identifier": {
+        "partner_job_id": "mock-devweb-003",
+        "id": "60d2f5a0e8c1a20001a1b2c5",
+        "partner_label": "LBA"
+      },
+      "workplace": {
+        "name": "Agence Web Créative",
+        "description": "Agence digitale spécialisée front-end.",
+        "website": "https://webcreative.example.com",
+        "siret": "11111111111111",
+        "location": {
+          "address": "3 place du Capitole 31000 Toulouse",
+          "geopoint": { "type": "Point", "coordinates": [1.4442, 43.6047] }
+        },
+        "brand": "WebCréative",
+        "legal_name": "Agence Web Créative SARL",
+        "size": "1 à 5 salariés",
+        "domain": {
+          "idcc": 1486,
+          "opco": "OPCO 2i",
+          "naf": { "code": "62.01Z", "label": "Programmation informatique" }
+        }
+      },
+      "apply": {
+        "phone": "05 61 00 00 00",
+        "url": "https://webcreative.example.com/jobs/dev-front",
+        "recipient_id": "11111111111111"
+      },
+      "contract": {
+        "start": "2026-08-24T00:00:00.000Z",
+        "start_type": "precise_date",
+        "start_is_flexible": true,
+        "duration": 12,
+        "type": ["Apprentissage"],
+        "remote": "remote"
+      },
+      "offer": {
+        "title": "Développeur / Développeuse Web Front-End en alternance",
+        "description": "Intégration de maquettes, développement de composants React/TypeScript et optimisation des performances web.",
+        "desired_skills": [
+          "Faire preuve de créativité",
+          "Travailler en équipe",
+          "Faire preuve de rigueur"
+        ],
+        "to_be_acquired_skills": [
+          "Concevoir une application web",
+          "Intégrer des interfaces responsive",
+          "Utiliser les outils front-end modernes"
+        ],
+        "access_conditions": [
+          "Formation de niveau Bac (développeur web) à Bac+3"
+        ],
+        "opening_count": 1,
+        "publication": {
+          "creation": "2026-10-01T10:00:00.000Z",
+          "expiration": "2027-03-31T23:59:59.000Z"
+        },
+        "rome_codes": ["M1805"],
+        "target_diploma": { "european": "5", "label": "Bac +2" },
+        "status": "Active",
+        "to_applicant_questions": null
+      },
+      "is_delegated": true
+    },
+    {
+      "identifier": {
+        "partner_job_id": "mock-infra-004",
+        "id": "60d2f5a0e8c1a20001a1b2c6",
+        "partner_label": "France Travail"
+      },
+      "workplace": {
+        "name": "CloudOps Systems",
+        "description": "Hébergeur et intégrateur de solutions cloud.",
+        "website": "https://cloudops.example.com",
+        "siret": "22222222222222",
+        "location": {
+          "address": "45 rue de la Paix 44000 Nantes",
+          "geopoint": { "type": "Point", "coordinates": [-1.5536, 47.2184] }
+        },
+        "brand": "CloudOps",
+        "legal_name": "CloudOps Systems",
+        "size": "100 à 199 salariés",
+        "domain": {
+          "idcc": 1486,
+          "opco": "OPCO 2i",
+          "naf": { "code": "63.11Z", "label": "Traitement de données, hébergement" }
+        }
+      },
+      "apply": {
+        "phone": "02 40 00 00 00",
+        "url": "https://cloudops.example.com/recrutement/devops",
+        "recipient_id": "22222222222222"
+      },
+      "contract": {
+        "start": "2026-09-15T00:00:00.000Z",
+        "start_type": "precise_date",
+        "start_is_flexible": false,
+        "duration": 18,
+        "type": ["Professionnalisation"],
+        "remote": "hybrid"
+      },
+      "offer": {
+        "title": "Technicien / Technicienne DevOps en alternance",
+        "description": "Administration de serveurs Linux, conteneurisation Docker/Kubernetes et automatisation avec des scripts d'infrastructure as code.",
+        "desired_skills": [
+          "Faire preuve d'autonomie",
+          "Faire preuve de rigueur et de précision",
+          "Travailler en équipe"
+        ],
+        "to_be_acquired_skills": [
+          "Administrer des systèmes",
+          "Automatiser des tâches",
+          "Utiliser des outils DevOps"
+        ],
+        "access_conditions": [
+          "Formation de niveau Bac+2 à Bac+3 en systèmes et réseaux"
+        ],
+        "opening_count": 1,
+        "publication": {
+          "creation": "2026-10-05T14:00:00.000Z",
+          "expiration": "2027-05-05T23:59:59.000Z"
+        },
+        "rome_codes": ["M1801", "M1810"],
+        "target_diploma": { "european": "5", "label": "Bac +2" },
+        "status": "Active",
+        "to_applicant_questions": null
+      },
+      "is_delegated": false
+    },
+    {
+      "identifier": {
+        "partner_job_id": "mock-cyber-005",
+        "id": "60d2f5a0e8c1a20001a1b2c7",
+        "partner_label": "LBA"
+      },
+      "workplace": {
+        "name": "SecureNet Consulting",
+        "description": "Cabinet de conseil en cybersécurité.",
+        "website": "https://securenet.example.com",
+        "siret": "33333333333333",
+        "location": {
+          "address": "8 boulevard Haussmann 75009 Paris",
+          "geopoint": { "type": "Point", "coordinates": [2.3376, 48.8742] }
+        },
+        "brand": "SecureNet",
+        "legal_name": "SecureNet Consulting SAS",
+        "size": "10 à 19 salariés",
+        "domain": {
+          "idcc": 1486,
+          "opco": "OPCO 2i",
+          "naf": { "code": "62.02A", "label": "Conseil en systèmes et logiciels informatiques" }
+        }
+      },
+      "apply": {
+        "phone": "01 42 00 00 00",
+        "url": "https://securenet.example.com/offres/cyber",
+        "recipient_id": "33333333333333"
+      },
+      "contract": {
+        "start": "2026-10-01T00:00:00.000Z",
+        "start_type": "des_que_possible",
+        "start_is_flexible": true,
+        "duration": 24,
+        "type": ["Apprentissage"],
+        "remote": "onsite"
+      },
+      "offer": {
+        "title": "Analyste Cybersécurité en alternance (H/F)",
+        "description": "Participation aux audits de sécurité, au SOC et à la mise en place des mesures de protection des systèmes d'information.",
+        "desired_skills": [
+          "Faire preuve de rigueur",
+          "Faire preuve d'analyse et de synthèse",
+          "Travailler en équipe"
+        ],
+        "to_be_acquired_skills": [
+          "Analyser les risques",
+          "Mettre en place des mesures de sécurité",
+          "Utiliser des outils de supervision"
+        ],
+        "access_conditions": [
+          "Formation de niveau Bac+3 à Bac+5 en cybersécurité ou informatique"
+        ],
+        "opening_count": 1,
+        "publication": {
+          "creation": "2026-10-12T11:00:00.000Z",
+          "expiration": "2027-06-12T23:59:59.000Z"
+        },
+        "rome_codes": ["M1802"],
+        "target_diploma": { "european": "6", "label": "Licence / BUT" },
+        "status": "Active",
+        "to_applicant_questions": null
+      },
+      "is_delegated": false
+    },
+    {
+      "identifier": {
+        "partner_job_id": "mock-prod-006",
+        "id": "60d2f5a0e8c1a20001a1b2c8",
+        "partner_label": "Météojobs"
+      },
+      "workplace": {
+        "name": "DataForge",
+        "description": "Editeur SaaS de solutions data.",
+        "website": "https://dataforge.example.com",
+        "siret": "44444444444444",
+        "location": {
+          "address": "27 quai des Chartrons 33300 Bordeaux",
+          "geopoint": { "type": "Point", "coordinates": [-0.5697, 44.8553] }
+        },
+        "brand": "DataForge",
+        "legal_name": "DataForge",
+        "size": "50 à 99 salariés",
+        "domain": {
+          "idcc": 1486,
+          "opco": "OPCO 2i",
+          "naf": { "code": "62.01Z", "label": "Programmation informatique" }
+        }
+      },
+      "apply": {
+        "phone": "05 56 00 00 00",
+        "url": "https://dataforge.example.com/jobs/ml-engineer",
+        "recipient_id": "44444444444444"
+      },
+      "contract": {
+        "start": "2026-09-01T00:00:00.000Z",
+        "start_type": "precise_date",
+        "start_is_flexible": false,
+        "duration": 24,
+        "type": ["Apprentissage"],
+        "remote": "remote"
+      },
+      "offer": {
+        "title": "Ingénieur / Ingénieure Machine Learning en alternance",
+        "description": "Conception et entraînement de modèles, préparation des données et mise en production (MLOps). Stack Python, scikit-learn, PyTorch.",
+        "desired_skills": [
+          "Faire preuve de créativité, d'inventivité",
+          "Faire preuve de rigueur",
+          "Travailler en équipe"
+        ],
+        "to_be_acquired_skills": [
+          "Concevoir des modèles de machine learning",
+          "Préparer et nettoyer des données",
+          "Mettre en production des modèles"
+        ],
+        "access_conditions": [
+          "Formation de niveau Master (Bac+5) en data science ou mathématiques appliquées"
+        ],
+        "opening_count": 1,
+        "publication": {
+          "creation": "2026-10-18T08:30:00.000Z",
+          "expiration": "2027-07-18T23:59:59.000Z"
+        },
+        "rome_codes": ["M1805", "M1806"],
+        "target_diploma": { "european": "7", "label": "Master / Bac +5" },
+        "status": "Active",
+        "to_applicant_questions": [
+          "Quels frameworks de ML connaissez-vous ?"
+        ]
+      },
+      "is_delegated": false
+    }
+  ]
+}

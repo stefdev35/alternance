@@ -19,7 +19,7 @@ from typing import Any, Optional
 
 import requests
 
-from .config import PROJECT_ROOT, settings
+from .config import settings
 from .models import JobOffer
 
 SEARCH_URL = "/job/v1/search"
@@ -32,7 +32,7 @@ DEFAULT_HEADERS = {
     "User-Agent": "alternance-project/0.1",
 }
 
-SAMPLE_OFFERS_FILE = PROJECT_ROOT / "data" / "sample_offers.json"
+SAMPLE_OFFERS_FILE = Path(__file__).resolve().parent / "samples" / "sample_offers.json"
 
 
 class LbaApiError(Exception):

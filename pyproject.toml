@@ -20,3 +20,16 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/alternance"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/alternance/samples/sample_offers.json" = "alternance/samples/sample_offers.json"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.2.0",
+]
