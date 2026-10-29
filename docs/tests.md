@@ -42,9 +42,11 @@ uv run pytest          # inclut désormais les tests Mongo
 |---|---|
 | `test_models.py` | Parsing Pydantic de la structure `JobOfferRead`, fallback de l'identifiant, aller-retour JSON |
 | `test_lba_api.py` | Client HTTP : header d'auth, parsing des réponses, retries, erreurs, mode mock |
+| `test_indeed.py` | Scraper Indeed : parsing recherche + détail (fixtures HTML), dates relatives, blocage anti-bot |
+| `test_normalize.py` | Normalisation Indeed → `JobOffer` : compatibilité avec le schéma LBA, mapping contrat/remote, stockage |
 | `test_duckdb_store.py` | Upsert (idempotent), lecture/reconstruction, filtrage par titre, inconnu |
 | `test_mongo_store.py` | Idem pour le stockage documentaire (ignoré si Mongo absent) |
-| `test_ingest.py` | Pipeline d'ingestion en mode mock, limite `max_offers` |
+| `test_ingest.py` | Pipeline d'ingestion : sources LBA/Indeed, limite `max_offers` |
 | `test_web.py` | Routes FastAPI : santé, liste, détail HTML/JSON, filtres, 404, backend Mongo |
 
 ## Notes

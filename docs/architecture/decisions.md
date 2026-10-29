@@ -63,3 +63,17 @@ Historique des choix structurants du projet, au format ADR (Architecture Decisio
   tests Mongo auto-ignorés si le serveur est absent, TestClient FastAPI pour le web.
 - **Conséquences** : suite rapide et déterministe ; MongoDB requis uniquement pour les
   tests dédiés.
+
+## ADR-008 — Sources multiples normalisées vers un schéma commun
+
+- **Statut** : acceptée
+- **Contexte** : compléter les données de l'API LBA avec une seconde source (scraping
+  Indeed) sans dupliquer le pipeline de stockage ni l'application web.
+- **Décision** : toute source est convertie vers le modèle commun `JobOffer`
+  (structure `JobOfferRead`) via un module de normalisation dédié
+  (`scrapers/normalize.py`) avant écriture. L'ingestion accepte un paramètre `--source`
+  (`lba`, `indeed`, `both`). Les champs non fournis par une source sont mis à une valeur
+  neutre (`[]`, `None`, `1`) pour respecter le schéma.
+- **Conséquences** : les offres de toutes les sources sont stockées et consultables de
+  façon homogène (mêmes identifiants, mêmes champs, mêmes contraintes) ; le coût est une
+  règle de correspondance par source à maintenir.

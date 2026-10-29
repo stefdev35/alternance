@@ -22,3 +22,7 @@ projet/
 
 # Documents personnels hors projet
 *.docx
+
+# Fichiers temporaires / sessions
+.~lock.*#
+projetalternance
