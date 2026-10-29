@@ -1,12 +1,14 @@
 # Documentation
 
 Documentation du projet **alternance** — collecte et consultation des offres d'emploi en
-alternance via l'API [La Bonne Alternance](https://api.apprentissage.beta.gouv.fr), stockées
-dans **DuckDB** (relationnel) et **MongoDB** (documentaire).
+alternance via l'API [La Bonne Alternance](https://api.apprentissage.beta.gouv.fr) et le
+scraping de [Indeed](https://fr.indeed.com), stockées dans **DuckDB** (relationnel) et
+**MongoDB** (documentaire).
 
 ## Sommaire
 
 - [Guide d'utilisation](usage.md) — installation, ingestion, application web, CLI
+- [Sources & normalisation](sources-normalisation.md) — compatibilité des données LBA / Indeed
 - [Tests](tests.md) — comment lancer et comprendre la suite de tests
 - [Déploiement](deploy.md) — dépendances, services, configuration, bonnes pratiques
 

@@ -44,26 +44,57 @@ L'image `mongo:7` est lancée sur `localhost:27017` avec un volume persistant.
 ### CLI
 
 ```bash
-# Mode mock (par défaut si pas de clé)
+# LBA — mode mock (par défaut si pas de clé)
 uv run python -m src.alternance.ingest
 
-# Avec l'API réelle
+# LBA — API réelle
 uv run python -m src.alternance.ingest --use-api
+
+# Scraping Indeed (peut être bloqué par l'anti-bot / robots.txt)
+uv run python -m src.alternance.ingest --source indeed
+
+# LBA + Indeed combinés
+uv run python -m src.alternance.ingest --source both
 
 # Limiter le nombre d'offres
 uv run python -m src.alternance.ingest --max 100
+
+# Requête Indeed personnalisée + fiches détaillées
+uv run python -m src.alternance.ingest --source indeed --indeed-query "data" --indeed-details
 ```
+
+Options CLI :
+
+| Option | Description |
+|---|---|
+| `--source {lba,indeed,both}` | Source des offres (défaut `lba`) |
+| `--use-api` | Force l'appel à l'API LBA (nécessite `LBA_API_KEY`) |
+| `--max N` | Limite le nombre d'offres |
+| `--indeed-query Q` | Requête de recherche Indeed (défaut `alternance`) |
+| `--indeed-details` | Récupère aussi les fiches détaillées Indeed (`viewjob`) |
+
+> ⚠️ **Indeed** : le scraping en direct est souvent bloqué (anti-bot HTTP 403) et interdit
+> par `robots.txt` (`/emploi/`, `/viewjob`). Le parsing est couvert par des tests sur
+> fixtures. Voir [Sources & normalisation](sources-normalisation.md).
 
 ### Depuis Python
 
 ```python
 from alternance.ingest import ingest
 
+# Source LBA
 report = ingest(use_api=True, max_offers=200)
-# {'offers_ingested': 200, 'duckdb_total': 384, 'mongo_total': 384}
+# {'source': 'lba', 'offers_ingested': 200, 'duckdb_total': 384, 'mongo_total': 384}
+
+# Source Indeed
+report = ingest(source="indeed", max_offers=50)
+
+# Les deux sources
+report = ingest(source="both", max_offers=300)
 ```
 
-L'ingestion écrit **les mêmes offres** dans DuckDB et MongoDB (upsert sur l'identifiant).
+L'ingestion écrit **les mêmes offres** (normalisées vers `JobOffer`) dans DuckDB et MongoDB
+(upsert sur l'identifiant).
 
 ## Application web
 

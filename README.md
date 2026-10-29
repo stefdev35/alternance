@@ -1,8 +1,10 @@
 # alternance
 
-Projet de collecte et de consultation des offres d'emploi en alternance à partir de l'API
-[La Bonne Alternance](https://api.apprentissage.beta.gouv.fr). Les données sont stockées dans
-**deux bases différentes** afin de tester les deux approches :
+Projet de collecte et de consultation des offres d'emploi en alternance à partir de
+**plusieurs sources** — l'API [La Bonne Alternance](https://api.apprentissage.beta.gouv.fr)
+et le scraping de [Indeed](https://fr.indeed.com) — normalisées vers un **schéma commun**
+(`JobOffer`). Les données sont stockées dans **deux bases différentes** afin de tester les
+deux approches :
 
 - **DuckDB** (relationnel) : schéma normalisé avec clés primaires/étrangères
 - **MongoDB** (NoSQL / documentaire) : chaque offre stockée telle quelle (JSON imbriqué)
@@ -10,7 +12,7 @@ Projet de collecte et de consultation des offres d'emploi en alternance à parti
 La consultation se fait via une petite application web **FastAPI** qui permet de basculer
 d'un backend à l'autre et d'afficher le détail de chaque annonce.
 
-## API utilisée
+## API utilisée (source LBA)
 
 - Recherche : `GET /job/v1/search` (filtres : romes, rncp, departements, opco, géolocalisation…)
 - Détail d'une offre : `GET /job/v1/offer/{id}`
@@ -37,8 +39,11 @@ cp .env.example .env
 # 3. Lancer MongoDB (Docker)
 docker compose up -d
 
-# 4. Ingérer les offres (mock par défaut, ou --use-api avec clé)
-uv run python -m src.alternance.ingest
+# 4. Ingérer les offres
+uv run python -m src.alternance.ingest                      # LBA (mock si pas de clé)
+uv run python -m src.alternance.ingest --use-api            # LBA avec clé
+uv run python -m src.alternance.ingest --source indeed      # scraping Indeed
+uv run python -m src.alternance.ingest --source both        # LBA + Indeed
 ```
 
 ## Application web
@@ -65,12 +70,14 @@ Routes utiles :
 uv run pytest
 ```
 
-35 tests : modèles, client API, stockages DuckDB/MongoDB, ingestion, application web.
+56 tests : modèles, client API, scraper Indeed, normalisation, stockages
+DuckDB/MongoDB, ingestion, application web.
 Détails : [`docs/tests.md`](docs/tests.md).
 
 ## Documentation
 
 - [Guide d'utilisation](docs/usage.md) — installation, ingestion, routes web, API LBA
+- [Sources & normalisation](docs/sources-normalisation.md) — compatibilité LBA / Indeed
 - [Déploiement](docs/deploy.md) — configuration, services, bonnes pratiques
 - [Architecture](docs/architecture/architecture.md) — schémas, modèle de données, ADR
 
@@ -81,7 +88,10 @@ src/alternance/
 ├── config.py            # réglages (variables d'environnement)
 ├── lba_api.py           # client API La Bonne Alternance + mode mock
 ├── models.py            # modèles Pydantic (structure JobOfferRead)
-├── ingest.py            # pipeline d'ingestion (CLI)
+├── ingest.py            # pipeline d'ingestion multi-sources (CLI)
+├── scrapers/
+│   ├── indeed.py        # scraper Indeed (recherche + détail, parsing HTML)
+│   └── normalize.py     # normalisation Indeed → JobOffer (compatibilité)
 ├── storage/
 │   ├── duckdb_store.py  # approche relationnelle (schéma normalisé)
 │   └── mongo_store.py   # approche documentaire (documents complets)
