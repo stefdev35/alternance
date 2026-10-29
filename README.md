@@ -1,1 +1,82 @@
 # alternance
+
+Projet de collecte et de consultation des offres d'emploi en alternance à partir de l'API
+[La Bonne Alternance](https://api.apprentissage.beta.gouv.fr). Les données sont stockées dans
+**deux bases différentes** afin de tester les deux approches :
+
+- **DuckDB** (relationnel) : schéma normalisé avec clés primaires/étrangères
+- **MongoDB** (NoSQL / documentaire) : chaque offre stockée telle quelle (JSON imbriqué)
+
+La consultation se fait via une petite application web **FastAPI** qui permet de basculer
+d'un backend à l'autre et d'afficher le détail de chaque annonce.
+
+## API utilisée
+
+- Recherche : `GET /job/v1/search` (filtres : romes, rncp, departements, opco, géolocalisation…)
+- Détail d'une offre : `GET /job/v1/offer/{id}`
+- Auth : header `Authorization: Bearer <API_KEY>`
+
+> Sans clé API, le projet utilise un **mode mock** (`data/sample_offers.json`) pour tester
+> toute la chaîne (ingestion + consultation) sans réseau.
+
+## Prérequis
+
+- Python ≥ 3.12 et [uv](https://docs.astral.sh/uv/)
+- Docker (pour MongoDB)
+
+## Installation
+
+```bash
+# 1. Environnement
+uv sync
+
+# 2. Config (optionnel, sinon mode mock)
+cp .env.example .env
+# → renseigner LBA_API_KEY si vous avez une clé
+
+# 3. Lancer MongoDB (Docker)
+docker compose up -d
+
+# 4. Ingérer les offres (mock par défaut, ou --use-api avec clé)
+uv run python -m src.alternance.ingest
+```
+
+## Application web
+
+```bash
+uv run uvicorn src.alternance.web.app:app --reload
+```
+
+Ouvrir http://127.0.0.1:8000
+
+Routes utiles :
+
+| Route | Description |
+|---|---|
+| `/` | Liste des offres (`?backend=duckdb\|mongo`, `?title=…`) |
+| `/offers/{id}` | Page de détail d'une offre |
+| `/offers` | Liste en JSON |
+| `/offers/{id}/json` | Détail d'une offre en JSON brut |
+| `/health` | État des connexions DuckDB / MongoDB |
+
+## Structure
+
+```
+src/alternance/
+├── config.py            # réglages (variables d'environnement)
+├── lba_api.py           # client API La Bonne Alternance + mode mock
+├── models.py            # modèles Pydantic (structure JobOfferRead)
+├── ingest.py            # pipeline d'ingestion (CLI)
+├── storage/
+│   ├── duckdb_store.py  # approche relationnelle (schéma normalisé)
+│   └── mongo_store.py   # approche documentaire (documents complets)
+└── web/
+    ├── app.py           # application FastAPI
+    └── templates/       # pages HTML (liste + détail)
+```
+
+## Notes
+
+- L'ingestion écrit les mêmes offres dans les **deux** bases (upsert sur l'identifiant).
+- Limites de débit API respectées : 60 appels/min en recherche, 120/min en détail.
+- Le fichier DuckDB est stocké dans `data/alternance.duckdb` (ignoré par git).

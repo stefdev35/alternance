@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Offres — Alternance{% endblock %}
+{% block content %}
+  <form class="toolbar" method="get" action="/">
+    <select name="backend" onchange="this.form.submit()">
+      <option value="duckdb" {% if backend == "duckdb" %}selected{% endif %}>DuckDB (relationnel)</option>
+      <option value="mongo" {% if backend == "mongo" %}selected{% endif %}>MongoDB (NoSQL)</option>
+    </select>
+    <input type="text" name="title" value="{{ title or '' }}" placeholder="Rechercher par titre…">
+    <button type="submit">Filtrer</button>
+    <span class="muted">{{ total }} offre(s)</span>
+  </form>
+
+  {% for offer in offers %}
+    <div class="card">
+      <h2>
+        <a href="/offers/{{ offer['id'] }}?backend={{ backend }}">
+          {{ offer['title'] }}
+        </a>
+      </h2>
+      <div class="meta">
+        {{ offer['partner_label'] or '' }}
+        {% if offer['workplace'] and offer['workplace'].get('name') %}
+          — {{ offer['workplace']['name'] }}
+        {% endif %}
+        {% if offer['workplace'] and offer['workplace']['location'] %}
+          — {{ offer['workplace']['location'].get('address', '') }}
+        {% endif %}
+      </div>
+      <div class="chips">
+        {% if offer.get('status') %}
+          <span class="status {{ offer['status'] }}">{{ offer['status'] }}</span>
+        {% endif %}
+        {% if offer['opening_count'] %}
+          <span class="chip">{{ offer['opening_count'] }} poste(s)</span>
+        {% endif %}
+        {% if offer['offer'] and offer['offer']['rome_codes'] %}
+          {% for code in offer['offer']['rome_codes'] %}
+            <span class="chip">{{ code }}</span>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p class="muted">Aucune offre trouvée.</p>
+  {% endfor %}
+{% endblock %}

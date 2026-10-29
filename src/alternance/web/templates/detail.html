@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ offer['offer']['title'] }} — Alternance{% endblock %}
+{% block content %}
+  <a class="back" href="/?backend={{ backend }}">← Retour à la liste</a>
+  <div class="card">
+    <h2>{{ offer['offer']['title'] }}</h2>
+    <div class="meta">
+      Source : {{ offer['identifier']['partner_label'] }}
+      {% if offer['is_delegated'] %} · Délégation centre de formation{% endif %}
+      {% if offer['offer'].get('status') %}
+        · <span class="status {{ offer['offer']['status'] }}">{{ offer['offer']['status'] }}</span>
+      {% endif %}
+    </div>
+
+    <dl>
+      <dt>Description</dt>
+      <dd>{{ offer['offer'].get('description', '') or '—' }}</dd>
+
+      <dt>Compétences attendues</dt>
+      <dd>
+        {% for s in offer['offer'].get('desired_skills', []) %}
+          <span class="pill">{{ s }}</span>
+        {% else %}—{% endfor %}
+      </dd>
+
+      <dt>Compétences à acquérir</dt>
+      <dd>
+        {% for s in offer['offer'].get('to_be_acquired_skills', []) %}
+          <span class="pill">{{ s }}</span>
+        {% else %}—{% endfor %}
+      </dd>
+
+      <dt>Conditions d'accès</dt>
+      <dd>
+        <ul>
+          {% for c in offer['offer'].get('access_conditions', []) %}
+            <li>{{ c }}</li>
+          {% else %}<li>—</li>{% endfor %}
+        </ul>
+      </dd>
+
+      <dt>Codes ROME</dt>
+      <dd>
+        {% for code in offer['offer'].get('rome_codes', []) %}
+          <span class="pill">{{ code }}</span>
+        {% else %}—{% endfor %}
+      </dd>
+
+      <dt>Diplôme visé</dt>
+      <dd>
+        {% set td = offer['offer'].get('target_diploma') %}
+        {% if td %}{{ td.get('label') or td.get('european') or '—' }}{% else %}—{% endif %}
+      </dd>
+
+      <dt>Postes à pourvoir</dt>
+      <dd>{{ offer['offer'].get('opening_count') or '—' }}</dd>
+
+      <dt>Contrat</dt>
+      <dd>
+        {% if offer.get('contract') %}
+          {{ offer['contract'].get('type', []) | join(', ') }}
+          {% if offer['contract'].get('duration') %} · {{ offer['contract']['duration'] }} mois{% endif %}
+          {% if offer['contract'].get('remote') %} · {{ offer['contract']['remote'] }}{% endif %}
+          {% if offer['contract'].get('start') %} · début {{ offer['contract']['start'] }}{% endif %}
+        {% else %}—{% endif %}
+      </dd>
+
+      <dt>Entreprise</dt>
+      <dd>
+        {% set wp = offer.get('workplace') %}
+        {% if wp %}
+          {{ wp.get('name') or wp.get('legal_name') or '—' }}
+          {% if wp.get('siret') %} · SIRET {{ wp['siret'] }}{% endif %}
+          {% if wp.get('size') %} · {{ wp['size'] }}{% endif %}
+          {% if wp.get('website') %} · <a href="{{ wp['website'] }}">{{ wp['website'] }}</a>{% endif %}
+          {% if wp.get('description') %}<br>{{ wp['description'] }}{% endif %}
+        {% else %}—{% endif %}
+      </dd>
+
+      <dt>Adresse</dt>
+      <dd>
+        {% if wp and wp.get('location') %}
+          {{ wp['location'].get('address', '—') }}
+          {% if wp['location'].get('geopoint') %}
+            ({{ wp['location']['geopoint']['coordinates'] | join(', ') }})
+          {% endif %}
+        {% else %}—{% endif %}
+      </dd>
+
+      <dt>Secteur</dt>
+      <dd>
+        {% if wp and wp.get('domain') %}
+          {% set dom = wp['domain'] %}
+          NAF {{ dom.get('naf', {}).get('code') }} — {{ dom.get('naf', {}).get('label') }}
+          · IDCC {{ dom.get('idcc') }} · OPCO {{ dom.get('opco') }}
+        {% else %}—{% endif %}
+      </dd>
+
+      <dt>Publication</dt>
+      <dd>
+        {% set pub = offer['offer'].get('publication') %}
+        {% if pub %}
+          Créée {{ pub.get('creation') }} · expire {{ pub.get('expiration') }}
+        {% else %}—{% endif %}
+      </dd>
+
+      <dt>Candidature</dt>
+      <dd>
+        {% if offer.get('apply') %}
+          {% if offer['apply'].get('url') %}<a href="{{ offer['apply']['url'] }}">{{ offer['apply']['url'] }}</a>{% endif %}
+          {% if offer['apply'].get('phone') %} · {{ offer['apply']['phone'] }}{% endif %}
+          {% if offer['apply'].get('recipient_id') %} · ref. {{ offer['apply']['recipient_id'] }}{% endif %}
+        {% else %}—{% endif %}
+      </dd>
+    </dl>
+
+    <p class="muted" style="margin-top:18px">
+      <a href="/offers/{{ offer['identifier']['id'] }}/json?backend={{ backend }}">Voir le JSON brut</a>
+    </p>
+  </div>
+{% endblock %}
