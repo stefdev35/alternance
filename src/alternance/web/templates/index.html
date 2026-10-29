@@ -6,7 +6,23 @@
       <option value="duckdb" {% if backend == "duckdb" %}selected{% endif %}>DuckDB (relationnel)</option>
       <option value="mongo" {% if backend == "mongo" %}selected{% endif %}>MongoDB (NoSQL)</option>
     </select>
-    <input type="text" name="title" value="{{ title or '' }}" placeholder="Rechercher par titre…">
+    <input type="text" name="title" value="{{ title or '' }}" placeholder="Titre…">
+    <input type="text" name="city" value="{{ city or '' }}" placeholder="Ville…" list="city-list">
+    <datalist id="city-list">
+      {% for c in cities %}<option value="{{ c }}">{% endfor %}
+    </datalist>
+    <input type="text" name="skill" value="{{ skill or '' }}" placeholder="Compétence…" list="skill-list">
+    <datalist id="skill-list">
+      {% for s in skills %}<option value="{{ s }}">{% endfor %}
+    </datalist>
+    <select name="diploma_level">
+      <option value="">Diplôme (tous)</option>
+      {% for d in diploma_levels %}
+        <option value="{{ d['level'] }}" {% if diploma_level == d['level'] %}selected{% endif %}>
+          Niveau {{ d['level'] }} — {{ d['label'] }}
+        </option>
+      {% endfor %}
+    </select>
     <button type="submit">Filtrer</button>
     <span class="muted">{{ total }} offre(s)</span>
   </form>
@@ -33,6 +49,9 @@
         {% endif %}
         {% if offer['opening_count'] %}
           <span class="chip">{{ offer['opening_count'] }} poste(s)</span>
+        {% endif %}
+        {% if offer.get('target_diploma_label') %}
+          <span class="chip">Diplôme : {{ offer['target_diploma_label'] }}</span>
         {% endif %}
         {% if offer['offer'] and offer['offer']['rome_codes'] %}
           {% for code in offer['offer']['rome_codes'] %}

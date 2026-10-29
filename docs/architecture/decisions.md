@@ -77,3 +77,20 @@ Historique des choix structurants du projet, au format ADR (Architecture Decisio
 - **Conséquences** : les offres de toutes les sources sont stockées et consultables de
   façon homogène (mêmes identifiants, mêmes champs, mêmes contraintes) ; le coût est une
   règle de correspondance par source à maintenir.
+
+## ADR-009 — Filtres de consultation (ville, compétence, diplôme)
+
+- **Statut** : acceptée
+- **Contexte** : enrichir la consultation web avec des critères de recherche métier :
+  localisation (ville), compétence et niveau de diplôme.
+- **Décision** : les filtres sont implémentés dans **les deux** stores avec une API
+  identique (`list_offers` / `count_offers` acceptent `title`, `city`, `skill`,
+  `diploma_level`), exposés dans l'API web (`/offers`) et l'interface (`/`). Le niveau de
+  diplôme est normalisé sur le code européen (`3`-`7`). Des facettes (`/filters`)
+  alimentent l'auto-complétion de l'interface.
+  - DuckDB : clauses `LIKE` + `EXISTS` sur la table `skills`, comparateur sur
+    `target_diploma_european`.
+  - MongoDB : `$regex` sur `workplace.location.address`, `$or` sur les tableaux de
+    compétences, égalité sur `offer.target_diploma.european`.
+- **Conséquences** : comportement identique entre les deux backends (mêmes résultats) ;
+  le filtre ville opère sur l'adresse complète (code postal + ville).

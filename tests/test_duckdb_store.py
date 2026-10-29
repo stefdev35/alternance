@@ -60,5 +60,42 @@ class TestDuckDBStore:
         assert rows
         assert all("Python" in r["title"] for r in rows)
 
+    def test_list_offers_city_filter(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        rows = store.list_offers(city="lyon")
+        assert rows
+        assert all("lyon" in (r["workplace"]["location"].get("address") or "").lower()
+                   for r in rows)
+
+    def test_list_offers_skill_filter(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        rows = store.list_offers(skill="autonomie")
+        assert rows
+        # Le filtre compétence doit renvoyer strictement moins (ou autant)
+        # d'offres que l'ensemble, et au moins une.
+        assert len(rows) <= len(sample_offers)
+        assert len(rows) >= 1
+
+    def test_list_offers_diploma_filter(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        rows = store.list_offers(diploma_level="6")
+        assert rows
+        assert all(r["target_diploma_european"] == "6" for r in rows)
+
+    def test_count_with_filters(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        total = store.count_offers()
+        filtered = store.count_offers(city="paris")
+        assert filtered <= total
+        assert filtered == len(store.list_offers(city="paris"))
+
+    def test_distinct_facets(self, store, sample_offers):
+        store.upsert_many(sample_offers)
+        assert store.distinct_cities()
+        assert store.distinct_skills()
+        levels = store.distinct_diploma_levels()
+        assert levels
+        assert all("level" in d and "label" in d for d in levels)
+
     def test_get_offer_unknown_returns_none(self, store):
         assert store.get_offer("inexistant") is None

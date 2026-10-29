@@ -73,11 +73,35 @@ class MongoStore:
                 doc["identifier"]["id"] = doc["_id"]
         return doc
 
-    def list_offers(self, limit: int = 50, offset: int = 0,
-                    title: Optional[str] = None) -> list[dict]:
-        query = {}
+    @staticmethod
+    def _offer_filters(title: Optional[str] = None,
+                       city: Optional[str] = None,
+                       skill: Optional[str] = None,
+                       diploma_level: Optional[str] = None) -> dict:
+        """Construit le filtre Mongo partagé (liste + comptage)."""
+        query: dict = {}
         if title:
             query["offer.title"] = {"$regex": title, "$options": "i"}
+        if city:
+            query["workplace.location.address"] = {"$regex": city, "$options": "i"}
+        if skill:
+            query["$or"] = [
+                {"offer.desired_skills": {"$regex": skill, "$options": "i"}},
+                {"offer.to_be_acquired_skills": {"$regex": skill, "$options": "i"}},
+                {"offer.access_conditions": {"$regex": skill, "$options": "i"}},
+            ]
+        if diploma_level:
+            query["offer.target_diploma.european"] = str(diploma_level)
+        return query
+
+    def list_offers(self, limit: int = 50, offset: int = 0,
+                    title: Optional[str] = None,
+                    city: Optional[str] = None,
+                    skill: Optional[str] = None,
+                    diploma_level: Optional[str] = None) -> list[dict]:
+        query = self._offer_filters(
+            title=title, city=city, skill=skill, diploma_level=diploma_level
+        )
         cursor = (
             self.collection.find(query)
             .sort("offer.publication.creation", -1)
@@ -98,12 +122,50 @@ class MongoStore:
             "status": offer.get("status"),
             "opening_count": offer.get("opening_count"),
             "publication_creation": (offer.get("publication") or {}).get("creation"),
+            "target_diploma_european": (offer.get("target_diploma") or {}).get("european"),
+            "target_diploma_label": (offer.get("target_diploma") or {}).get("label"),
             "workplace": workplace,
             "offer": offer,
         }
 
-    def count_offers(self) -> int:
-        return self.collection.count_documents({})
+    def count_offers(self, title: Optional[str] = None,
+                     city: Optional[str] = None,
+                     skill: Optional[str] = None,
+                     diploma_level: Optional[str] = None) -> int:
+        query = self._offer_filters(
+            title=title, city=city, skill=skill, diploma_level=diploma_level
+        )
+        return self.collection.count_documents(query)
+
+    def distinct_cities(self, limit: int = 200) -> list[str]:
+        return self.collection.distinct("workplace.location.address")[:limit]
+
+    def distinct_skills(self, limit: int = 300) -> list[str]:
+        skills: list[str] = []
+        seen: set[str] = set()
+        for field in ("offer.desired_skills", "offer.to_be_acquired_skills",
+                      "offer.access_conditions"):
+            for value in self.collection.distinct(field):
+                if value not in seen:
+                    seen.add(value)
+                    skills.append(value)
+                if len(skills) >= limit:
+                    break
+        return skills
+
+    def distinct_diploma_levels(self) -> list[dict]:
+        levels: dict[str, str] = {}
+        for doc in self.collection.find(
+            {"offer.target_diploma": {"$ne": None}},
+            {"offer.target_diploma": 1},
+        ):
+            td = (doc.get("offer") or {}).get("target_diploma") or {}
+            if td.get("european") and td["european"] not in levels:
+                levels[td["european"]] = td.get("label")
+        return [
+            {"level": level, "label": label}
+            for level, label in sorted(levels.items())
+        ]
 
     def _clean(self, doc: dict) -> dict:
         doc = dict(doc)

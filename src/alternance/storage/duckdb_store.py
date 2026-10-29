@@ -363,19 +363,56 @@ class DuckDBStore:
         nested = self._fetch_nested(offer_id)
         return nested or None
 
+    @staticmethod
+    def _offer_filters(title: Optional[str] = None,
+                       city: Optional[str] = None,
+                       skill: Optional[str] = None,
+                       diploma_level: Optional[str] = None) -> tuple[str, list]:
+        """Construit la clause WHERE partagée (liste + comptage)."""
+        conditions: list[str] = []
+        params: list = []
+        if title:
+            conditions.append("lower(o.title) LIKE lower(?)")
+            params.append(f"%{title}%")
+        if city:
+            conditions.append("lower(w.address) LIKE lower(?)")
+            params.append(f"%{city}%")
+        if skill:
+            conditions.append(
+                "EXISTS (SELECT 1 FROM skills s WHERE s.offer_id = o.id "
+                "AND lower(s.skill) LIKE lower(?))"
+            )
+            params.append(f"%{skill}%")
+        if diploma_level:
+            conditions.append("o.target_diploma_european = ?")
+            params.append(str(diploma_level))
+        where = " WHERE " + " AND ".join(conditions) if conditions else ""
+        return where, params
+
     def list_offers(self, limit: int = 50, offset: int = 0,
-                    title: Optional[str] = None) -> list[dict]:
+                    title: Optional[str] = None,
+                    city: Optional[str] = None,
+                    skill: Optional[str] = None,
+                    diploma_level: Optional[str] = None) -> list[dict]:
+        """Liste les offres avec filtres optionnels.
+
+        - `title`         : correspondance (insensible à la casse) sur le titre
+        - `city`          : correspondance sur l'adresse du lieu de travail (ville)
+        - `skill`         : correspondance sur les compétences (tous types confondus)
+        - `diploma_level` : niveau européen du diplôme visé ("3" à "7")
+        """
+        where, params = self._offer_filters(
+            title=title, city=city, skill=skill, diploma_level=diploma_level
+        )
         sql = (
             "SELECT o.id, o.partner_label, o.title, o.status, o.opening_count, "
             "o.publication_creation, w.name AS workplace_name, "
-            "w.address AS workplace_address "
+            "w.address AS workplace_address, "
+            "o.target_diploma_european, o.target_diploma_label "
             "FROM offers o "
             "LEFT JOIN workplaces w ON w.offer_id = o.id"
+            + where
         )
-        params: list = []
-        if title:
-            sql += " WHERE lower(o.title) LIKE lower(?)"
-            params.append(f"%{title}%")
         sql += " ORDER BY o.publication_creation DESC NULLS LAST LIMIT ? OFFSET ?"
         params += [limit, offset]
         rows = self._rows(sql, params)
@@ -387,8 +424,46 @@ class DuckDBStore:
             row["workplace"] = workplace
         return rows
 
-    def count_offers(self) -> int:
-        return self._rows("SELECT COUNT(*) AS n FROM offers")[0]["n"]
+    def count_offers(self, title: Optional[str] = None,
+                     city: Optional[str] = None,
+                     skill: Optional[str] = None,
+                     diploma_level: Optional[str] = None) -> int:
+        where, params = self._offer_filters(
+            title=title, city=city, skill=skill, diploma_level=diploma_level
+        )
+        sql = (
+            "SELECT COUNT(*) AS n FROM offers o "
+            "LEFT JOIN workplaces w ON w.offer_id = o.id"
+            + where
+        )
+        return self._rows(sql, params)[0]["n"]
+
+    def distinct_cities(self, limit: int = 200) -> list[str]:
+        """Villes disponibles (dérivées des adresses, unique)."""
+        rows = self._rows(
+            "SELECT DISTINCT address FROM workplaces "
+            "WHERE address IS NOT NULL AND address != '' "
+            "ORDER BY address LIMIT ?",
+            [limit],
+        )
+        return [r["address"] for r in rows]
+
+    def distinct_skills(self, limit: int = 300) -> list[str]:
+        rows = self._rows(
+            "SELECT DISTINCT skill FROM skills ORDER BY skill LIMIT ?", [limit]
+        )
+        return [r["skill"] for r in rows]
+
+    def distinct_diploma_levels(self) -> list[dict]:
+        rows = self._rows(
+            "SELECT DISTINCT target_diploma_european, target_diploma_label "
+            "FROM offers WHERE target_diploma_european IS NOT NULL "
+            "ORDER BY target_diploma_european"
+        )
+        return [
+            {"level": r["target_diploma_european"], "label": r["target_diploma_label"]}
+            for r in rows
+        ]
 
     def close(self) -> None:
         self.conn.close()

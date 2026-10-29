@@ -1,5 +1,7 @@
 """Application web FastAPI : consultation des offres d'alternance
 stockées dans DuckDB (relationnel) ou MongoDB (documentaire).
+
+Filtres disponibles : titre, ville, compétence, niveau de diplôme.
 """
 
 from __future__ import annotations
@@ -29,11 +31,23 @@ def _get_store(backend: str):
 
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, backend: str = Query("duckdb"),
-          title: Optional[str] = Query(None), limit: int = Query(50, le=500)):
+def index(request: Request,
+          backend: str = Query("duckdb"),
+          title: Optional[str] = Query(None),
+          city: Optional[str] = Query(None),
+          skill: Optional[str] = Query(None),
+          diploma_level: Optional[str] = Query(None),
+          limit: int = Query(50, le=500)):
     store = _get_store(backend)
-    offers = store.list_offers(limit=limit, title=title)
-    total = store.count_offers()
+    offers = store.list_offers(
+        limit=limit, title=title, city=city, skill=skill, diploma_level=diploma_level
+    )
+    total = store.count_offers(
+        title=title, city=city, skill=skill, diploma_level=diploma_level
+    )
+    cities = store.distinct_cities()
+    skills = store.distinct_skills()
+    diploma_levels = store.distinct_diploma_levels()
     store.close()
     return templates.TemplateResponse(
         request,
@@ -43,6 +57,12 @@ def index(request: Request, backend: str = Query("duckdb"),
             "offers": offers,
             "total": total,
             "title": title,
+            "city": city,
+            "skill": skill,
+            "diploma_level": diploma_level,
+            "diploma_levels": diploma_levels,
+            "cities": cities,
+            "skills": skills,
         },
     )
 
@@ -50,11 +70,29 @@ def index(request: Request, backend: str = Query("duckdb"),
 @app.get("/offers", response_model=list)
 def list_offers_json(backend: str = Query("duckdb"),
                      title: Optional[str] = Query(None),
+                     city: Optional[str] = Query(None),
+                     skill: Optional[str] = Query(None),
+                     diploma_level: Optional[str] = Query(None),
                      limit: int = Query(50, le=500)):
     store = _get_store(backend)
-    offers = store.list_offers(limit=limit, title=title)
+    offers = store.list_offers(
+        limit=limit, title=title, city=city, skill=skill, diploma_level=diploma_level
+    )
     store.close()
     return offers
+
+
+@app.get("/filters")
+def list_filters(backend: str = Query("duckdb")):
+    """Valeurs disponibles pour les filtres (villes, compétences, diplômes)."""
+    store = _get_store(backend)
+    data = {
+        "cities": store.distinct_cities(),
+        "skills": store.distinct_skills(),
+        "diploma_levels": store.distinct_diploma_levels(),
+    }
+    store.close()
+    return data
 
 
 @app.get("/offers/{offer_id}", response_class=HTMLResponse)

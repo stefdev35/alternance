@@ -106,13 +106,26 @@ Ouvrir http://127.0.0.1:8000
 
 | Route | Méthode | Description |
 |---|---|---|
-| `/` | GET | Liste des offres. Query params : `backend` (`duckdb`\|`mongo`), `title`, `limit` |
+| `/` | GET | Liste des offres. Query params : `backend` (`duckdb`\|`mongo`), `title`, `city`, `skill`, `diploma_level`, `limit` |
 | `/offers/{id}` | GET | Page HTML de détail d'une offre |
 | `/offers` | GET | Liste JSON des offres (mêmes params que `/`) |
 | `/offers/{id}/json` | GET | Détail d'une offre en JSON brut |
+| `/filters` | GET | Valeurs disponibles pour les filtres (`cities`, `skills`, `diploma_levels`) |
 | `/health` | GET | État des connexions DuckDB / MongoDB |
 
 La documentation interactive OpenAPI est disponible sur `/docs` (générée par FastAPI).
+
+### Filtres disponibles
+
+| Paramètre | Description | Exemple |
+|---|---|---|
+| `title` | Correspondance (insensible à la casse) sur le titre | `?title=python` |
+| `city` | Correspondance sur l'adresse/lieu de travail (ville) | `?city=paris` |
+| `skill` | Correspondance sur les compétences (attendues, à acquérir, accès) | `?skill=autonomie` |
+| `diploma_level` | Niveau européen du diplôme visé (`3` à `7`) | `?diploma_level=6` |
+
+Les filtres sont **cumulables** (AND). Dans l'interface web, la ville et la compétence
+bénéficient d'auto-complétion (datalists) ; le niveau de diplôme est un menu déroulant.
 
 ### Exemples curl
 
@@ -122,6 +135,18 @@ curl "http://127.0.0.1:8000/?backend=duckdb"
 
 # Recherche par titre sur MongoDB
 curl "http://127.0.0.1:8000/offers?backend=mongo&title=python"
+
+# Filtre géographique (ville = paris)
+curl "http://127.0.0.1:8000/offers?city=paris"
+
+# Filtre par compétence
+curl "http://127.0.0.1:8000/offers?skill=autonomie"
+
+# Filtre par niveau de diplôme (Bac+3 / Licence → niveau 6)
+curl "http://127.0.0.1:8000/offers?diploma_level=6"
+
+# Filtres combinés
+curl "http://127.0.0.1:8000/offers?city=paris&diploma_level=6&skill=equipe"
 
 # Détail JSON d'une offre
 curl "http://127.0.0.1:8000/offers/6ac96842015572e53e599d18/json"

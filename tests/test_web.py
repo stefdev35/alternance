@@ -55,6 +55,38 @@ class TestWebApp:
         assert rows
         assert all("Python" in r["title"] for r in rows)
 
+    def test_offers_json_city_filter(self, client):
+        resp = client.get("/offers?city=lyon")
+        rows = resp.json()
+        assert rows
+        assert all("lyon" in (r["workplace"]["location"].get("address") or "").lower()
+                   for r in rows)
+
+    def test_offers_json_skill_filter(self, client):
+        resp = client.get("/offers?skill=autonomie")
+        rows = resp.json()
+        assert rows
+        assert len(rows) <= len(client.get("/offers").json())
+
+    def test_offers_json_diploma_filter(self, client):
+        resp = client.get("/offers?diploma_level=6")
+        rows = resp.json()
+        assert rows
+        assert all(r["target_diploma_european"] == "6" for r in rows)
+
+    def test_index_renders_filters_form(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+        assert "city" in resp.text
+        assert "skill" in resp.text
+        assert "diploma_level" in resp.text
+
+    def test_filters_endpoint(self, client):
+        resp = client.get("/filters")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert "cities" in data and "skills" in data and "diploma_levels" in data
+
     def test_offer_detail_html(self, client, sample_offers):
         offer = sample_offers[0]
         resp = client.get(f"/offers/{offer.id}")
